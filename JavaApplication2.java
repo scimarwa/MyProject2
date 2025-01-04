@@ -4,6 +4,11 @@
  */
 package javaapplication2;
 
+import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Kimo Store
@@ -16,18 +21,51 @@ public class JavaApplication2 extends Instructor {
     public static void main(String[] args) {
          Instructor instructor = new Instructor();
 
-        instructor.addStudent("Ahmed", 100);
-        instructor.addStudent("Samir", 80);
+       JFrame frame = new JFrame("Student Management");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new GridLayout(4, 1));
 
-        System.out.println("Students:");
-        instructor.displayStudents();
+        JButton addButton = new JButton("Add Student");
+        JButton editButton = new JButton("Edit Student");
+        JButton deleteButton = new JButton("Delete Student");
+        JButton displayButton = new JButton("Display Students");
 
-        instructor.editStudent("Ahmed", 90);
-        instructor.deleteStudent("Samir");
+        frame.add(addButton);
+        frame.add(editButton);
+        frame.add(deleteButton);
+        frame.add(displayButton);
 
-        System.out.println("Updated Students:");
-        instructor.displayStudents();
-        // TODO code application logic here
+        // Action Listeners for Buttons
+        addButton.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog("Enter student name:");
+            String gradeInput = JOptionPane.showInputDialog("Enter student grade:");
+            try {
+                double grade = Double.parseDouble(gradeInput);
+                instructor.addStudent(name, grade);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid grade. Please enter a number.");
+            }
+        });
+
+        editButton.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog("Enter the name of the student to edit:");
+            String gradeInput = JOptionPane.showInputDialog("Enter the new grade:");
+            try {
+                double grade = Double.parseDouble(gradeInput);
+                instructor.editStudent(name, grade);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid grade. Please enter a number.");
+            }
+        });
+
+        deleteButton.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog("Enter the name of the student to delete:");
+            instructor.deleteStudent(name);
+        });
+
+        displayButton.addActionListener(e -> instructor.displayStudents());
+
+        frame.setVisible(true);
     }
-    
 }

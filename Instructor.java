@@ -4,6 +4,7 @@
  */
 package javaapplication2;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -14,7 +15,7 @@ import javax.swing.JTextArea;
  * @author Kimo Store
  */
 public class Instructor {
-     static class Student {
+    static class Student {
         String name;
         double grade;
 
@@ -25,45 +26,56 @@ public class Instructor {
 
         @Override
         public String toString() {
-            return name + " - " + grade;
-        }
-    }
-       private ArrayList<Student> students = new ArrayList<>();
-       
-        public void addStudent(String name, double grade) {
-            students.add(new Student(name,grade));
-            
-        }
-         public void editStudent(String name, double grade) {
-        for (int i = 0; i < students.size(); i++) {
-            if (students.get(i).name.equals(name)) {
-                students.get(i).grade = grade;
-                break;
-            }
+            return String.format("%-20s %.2f", name, grade);
         }
     }
 
-       public void deleteStudent(String name) {
+    private ArrayList<Student> students = new ArrayList<>();
+
+    public void addStudent(String name, double grade) {
+        if (name == null || name.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Name cannot be empty.");
+            return;
+        }
+        if (grade < 0 || grade > 100) {
+            JOptionPane.showMessageDialog(null, "Grade must be between 0 and 100.");
+            return;
+        }
+        students.add(new Student(name, grade));
+    }
+
+    public void editStudent(String name, double grade) {
+        for (Student student : students) {
+            if (student.name.equals(name)) {
+                student.grade = grade;
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Student not found: " + name);
+    }
+
+    public void deleteStudent(String name) {
         for (int i = 0; i < students.size(); i++) {
             if (students.get(i).name.equals(name)) {
                 students.remove(i);
-                break;
+                return;
             }
         }
+        JOptionPane.showMessageDialog(null, "Student not found: " + name);
     }
-            public void displayStudents() {
-            StringBuilder studentList = new StringBuilder();
-        for (int i = 0; i < students.size(); i++) {
-              studentList.append(students.get(i).toString()).append("\n");
+
+    public void displayStudents() {
+        StringBuilder studentList = new StringBuilder();
+        for (Student student : students) {
+            studentList.append(student.toString()).append("\n");
         }
-         JTextArea textArea = new JTextArea(studentList.toString());
+
+        JTextArea textArea = new JTextArea(studentList.toString());
         JScrollPane scrollPane = new JScrollPane(textArea);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        scrollPane.setPreferredSize(new java.awt.Dimension(250, 150));
+        scrollPane.setPreferredSize(new Dimension(300, 200));
 
         JOptionPane.showMessageDialog(null, scrollPane, "Student List", JOptionPane.INFORMATION_MESSAGE);
     }
-         
-         
-    }
+}
