@@ -1,0 +1,114 @@
+package javaapplication2;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+
+class Grades extends Instructor  {
+    private Map<String, Integer> grades;
+
+    public Grades() {
+        grades = new HashMap<>();
+    }
+
+    public void addGrade(String studentName, int grade) {
+        grades.put(studentName, grade);
+    }
+
+    public Integer getGrade(String studentName) {
+        return grades.getOrDefault(studentName, null);
+    }
+}
+
+public class Main {
+    private static Grades gradesSystem = new Grades();
+
+    public static void main(String[] args) {
+        gradesSystem.addGrade ("Ahmed", 100);
+        gradesSystem.addGrade("Samir", 80);
+
+        JFrame frame = new JFrame("Grades System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(5, 2));
+
+        JLabel roleLabel = new JLabel("Role (student/instructor):");
+        JTextField roleField = new JTextField();
+        inputPanel.add(roleLabel);
+        inputPanel.add(roleField);
+
+        JLabel nameLabel = new JLabel("Your Name:");
+        JTextField nameField = new JTextField();
+        inputPanel.add(nameLabel);
+        inputPanel.add(nameField);
+
+        JLabel studentNameLabel = new JLabel("Student Name:");
+        JTextField studentNameField = new JTextField();
+        inputPanel.add(studentNameLabel);
+        inputPanel.add(studentNameField);
+
+        JLabel gradeLabel = new JLabel("Grade (if adding):");
+        JTextField gradeField = new JTextField();
+        inputPanel.add(gradeLabel);
+        inputPanel.add(gradeField);
+
+        JButton actionButton = new JButton("Submit");
+        JLabel resultLabel = new JLabel("");
+
+        actionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String role = roleField.getText().trim().toLowerCase();
+                String userName = nameField.getText().trim();
+                String studentName = studentNameField.getText().trim();
+                String gradeText = gradeField.getText().trim();
+
+                if (role.equals("instructor")) {
+                    if (studentName.isEmpty() || gradeText.isEmpty()) {
+                        resultLabel.setText("Please enter both student name and grade.");
+                        return;
+                    }
+                    try {
+                        int grade = Integer.parseInt(gradeText);
+                        gradesSystem.addGrade(studentName, grade);
+                        resultLabel.setText("Grade added for " + studentName);
+                    } catch (NumberFormatException ex) {
+                        resultLabel.setText("Invalid grade input.");
+                    }
+                } else if (role.equals("student")) {
+                    if (!userName.equals(studentName)) {
+                        resultLabel.setText("Students can only view their own grades.");
+                    } else {
+                        Integer grade = gradesSystem.getGrade(studentName);
+                        if (grade != null) {
+                            resultLabel.setText(studentName + "'s grade: " + grade);
+                        } else {
+                            resultLabel.setText("No grade found for " + studentName);
+                        }
+                    }
+                } else {
+                    resultLabel.setText("Invalid role.");
+                }
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BorderLayout());
+        buttonPanel.add(actionButton, BorderLayout.CENTER);
+        buttonPanel.add(resultLabel, BorderLayout.SOUTH);
+
+        mainPanel.add(inputPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.add(mainPanel);
+        frame.setVisible(true);
+    }
+}
